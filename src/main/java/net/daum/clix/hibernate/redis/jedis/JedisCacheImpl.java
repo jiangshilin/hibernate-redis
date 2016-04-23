@@ -31,7 +31,7 @@ public class JedisCacheImpl implements RedisCache {
 
         Jedis jedis = pool.getResource();
         try {
-            byte[] k = serializeObject(key.toString());
+            byte[] k = key.toString().getBytes();
             byte[] v = jedis.get(k);
             if (v != null && v.length > 0) {
                 o = deserializeObject(v);
@@ -46,7 +46,7 @@ public class JedisCacheImpl implements RedisCache {
 
     @Override
     public void put(Object key, Object value) throws CacheException {
-        byte[] k = serializeObject(key.toString());
+        byte[] k = key.toString().getBytes();
         byte[] v = serializeObject(value);
 
         Jedis jedis = pool.getResource();
@@ -63,7 +63,7 @@ public class JedisCacheImpl implements RedisCache {
     public void remove(Object key) throws CacheException {
         Jedis jedis = pool.getResource();
         try {
-            jedis.del(serializeObject(key.toString()));
+            jedis.del(key.toString().getBytes());
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(jedis);
         } finally {
@@ -75,7 +75,7 @@ public class JedisCacheImpl implements RedisCache {
     public boolean exists(String key) {
         Jedis jedis = pool.getResource();
         try {
-            return jedis.exists(serializeObject(key.toString()));
+            return jedis.exists(key.toString().getBytes());
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(jedis);
         } finally {
